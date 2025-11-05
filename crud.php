@@ -33,7 +33,7 @@ if ($accion == 'editar') {
 }
 
 if ($accion == 'eliminar') {
-    $id = $_GET['nombre'] ?? $_POST['nombre'];
+    $nombre = $_GET['nombre'] ?? $_POST['nombre'];
     $conexion->query("DELETE FROM productos WHERE nombre='$nombre'");
     header("Location: index.php");
     exit;
