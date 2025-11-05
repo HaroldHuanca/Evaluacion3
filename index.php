@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                           <td>{$row['descripcion']}</td>
                           <td>S/. {$row['precio']}</td>
                           <td>{$row['descuento']}%</td>
-                          <td>{$row['stock']}</td>
+                          <td>{$row['cantidad']}</td>
                           <td>
                               <a href='index.php?editar=1&id={$row['id']}&nombre=".urlencode($row['nombre'])."&descripcion=".urlencode($row['descripcion'])."&precio={$row['precio']}&descuento={$row['descuento']}&stock={$row['stock']}' class='btnEditar'>✏️</a>
                               <a href='crud.php?accion=eliminar&id={$row['id']}' onclick='return confirm(\"¿Estás seguro de eliminar este producto?\")'>🗑️</a>

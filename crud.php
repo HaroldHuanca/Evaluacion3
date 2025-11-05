@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);      // Muestra todos los errores y advertencias
+ini_set('display_errors', 1);
 include 'conexion.php';
 
 $accion = $_POST['accion'] ?? $_GET['accion'] ?? '';
@@ -24,15 +26,15 @@ if ($accion == 'editar') {
     $descuento = $_POST['descuento'];
     $stock = $_POST['stock'];
 
-    $conexion->query("UPDATE productos SET nombre='$nombre', descripcion='$descripcion', precio='$precio',
-                      descuento='$descuento', cantidad='$stock' WHERE id=$id");
+    $conexion->query("UPDATE productos SET descripcion='$descripcion', precio='$precio',
+                      descuento='$descuento', cantidad='$stock' WHERE nombre='$nombre'");
     header("Location: index.php");
     exit;
 }
 
 if ($accion == 'eliminar') {
-    $id = $_GET['id'] ?? $_POST['id'];
-    $conexion->query("DELETE FROM productos WHERE id=$id");
+    $id = $_GET['nombre'] ?? $_POST['nombre'];
+    $conexion->query("DELETE FROM productos WHERE nombre='$nombre'");
     header("Location: index.php");
     exit;
 }
