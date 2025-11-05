@@ -110,5 +110,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       </table>
     </section>
   </main>
+  <footer>
+    <div style="margin: auto 0;">
+        <p>INTEGRANTES:</p><br>
+        <p>Harold Huanca Ccasa</p><br>
+        <p>Jorge Salvador Rodrigo Chipa</p><br>
+        <p>Aaron Ramirez Tisoc</p><br>
+    </div>
+  </footer>
 </body>
 </html>
