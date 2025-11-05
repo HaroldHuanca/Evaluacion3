@@ -1,7 +1,7 @@
 <?php
 include 'conexion.php';
 
-$accion = $_POST['accion'] ?? '';
+$accion = $_POST['accion'] ?? $_GET['accion'] ?? '';
 
 if ($accion == 'agregar') {
     $nombre = $_POST['nombre'];
@@ -10,8 +10,10 @@ if ($accion == 'agregar') {
     $descuento = $_POST['descuento'];
     $stock = $_POST['stock'];
 
-    $conexion->query("INSERT INTO productos (nombre, descripcion, precio, descuento, stock)
+    $conexion->query("INSERT INTO productos (nombre, descripcion, precio, descuento, cantidad)
                       VALUES ('$nombre', '$descripcion', '$precio', '$descuento', '$stock')");
+    header("Location: index.php");
+    exit;
 }
 
 if ($accion == 'editar') {
@@ -23,12 +25,16 @@ if ($accion == 'editar') {
     $stock = $_POST['stock'];
 
     $conexion->query("UPDATE productos SET nombre='$nombre', descripcion='$descripcion', precio='$precio',
-                      descuento='$descuento', stock='$stock' WHERE id=$id");
+                      descuento='$descuento', cantidad='$stock' WHERE id=$id");
+    header("Location: index.php");
+    exit;
 }
 
 if ($accion == 'eliminar') {
-    $id = $_POST['id'];
+    $id = $_GET['id'] ?? $_POST['id'];
     $conexion->query("DELETE FROM productos WHERE id=$id");
+    header("Location: index.php");
+    exit;
 }
 
 if ($accion == 'listar') {
@@ -51,7 +57,7 @@ if ($accion == 'listar') {
                 <td>{$row['descripcion']}</td>
                 <td>S/. {$row['precio']}</td>
                 <td>{$row['descuento']}%</td>
-                <td>{$row['stock']}</td>
+                <td>{$row['cantidad']}</td>
                 <td>
                     <button class='btnEditar' data-id='{$row['id']}'>✏️</button>
                     <button class='btnEliminar' data-id='{$row['id']}'>🗑️</button>

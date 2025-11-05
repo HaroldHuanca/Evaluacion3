@@ -1,45 +1,74 @@
-<?php include 'conexion.php'; ?>
+<?php 
+include 'conexion.php';
+
+// Consulta inicial para cargar productos
+$query = "SELECT * FROM productos ORDER BY nombre ASC";
+$productos = $conexion->query($query);
+
+// Obtener filtros si se enviaron
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $filtro_nombre = $_POST['filtro_nombre'] ?? '';
+    $filtro_precio = $_POST['filtro_precio'] ?? '0';
+    $orden = $_POST['orden'] ?? 'nombre';
+
+    $query = "SELECT * FROM productos WHERE nombre LIKE '%$filtro_nombre%'";
+
+    if ($filtro_precio == '1') $query .= " AND precio < 20";
+    elseif ($filtro_precio == '2') $query .= " AND precio BETWEEN 20 AND 50";
+    elseif ($filtro_precio == '3') $query .= " AND precio > 50";
+
+    $query .= " ORDER BY $orden ASC";
+    $productos = $conexion->query($query);
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <title>Gestión de Productos</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
   <main class="contenedor">
     <!-- ASIDE FILTROS -->
     <aside class="filtros">
       <h3>Filtros</h3>
-      <input type="text" id="filtro_nombre" placeholder="Buscar por nombre...">
-      <label>Rango de precios:</label>
-      <select id="filtro_precio">
-        <option value="0">Todos</option>
-        <option value="1">Menor a S/.20</option>
-        <option value="2">Entre S/.20 y S/.50</option>
-        <option value="3">Mayor a S/.50</option>
-      </select>
+      <form method="POST" action="">
+        <input type="text" name="filtro_nombre" placeholder="Buscar por nombre..." 
+               value="<?php echo $_POST['filtro_nombre'] ?? ''; ?>">
+        <label>Rango de precios:</label>
+        <select name="filtro_precio">
+          <option value="0" <?php echo (isset($_POST['filtro_precio']) && $_POST['filtro_precio'] == '0') ? 'selected' : ''; ?>>Todos</option>
+          <option value="1" <?php echo (isset($_POST['filtro_precio']) && $_POST['filtro_precio'] == '1') ? 'selected' : ''; ?>>Menor a S/.20</option>
+          <option value="2" <?php echo (isset($_POST['filtro_precio']) && $_POST['filtro_precio'] == '2') ? 'selected' : ''; ?>>Entre S/.20 y S/.50</option>
+          <option value="3" <?php echo (isset($_POST['filtro_precio']) && $_POST['filtro_precio'] == '3') ? 'selected' : ''; ?>>Mayor a S/.50</option>
+        </select>
 
-      <label>Ordenar por:</label>
-      <select id="orden">
-        <option value="nombre">Nombre</option>
-        <option value="precio">Precio</option>
-      </select>
-      <button id="btnFiltrar">Aplicar</button>
+        <label>Ordenar por:</label>
+        <select name="orden">
+          <option value="nombre" <?php echo (isset($_POST['orden']) && $_POST['orden'] == 'nombre') ? 'selected' : ''; ?>>Nombre</option>
+          <option value="precio" <?php echo (isset($_POST['orden']) && $_POST['orden'] == 'precio') ? 'selected' : ''; ?>>Precio</option>
+        </select>
+        <button type="submit">Aplicar Filtros</button>
+      </form>
     </aside>
 
     <!-- FORMULARIO -->
     <section class="formulario">
       <h2>Registrar Producto</h2>
-      <form id="formProducto">
-        <input type="hidden" name="id" id="id">
-        <input type="text" name="nombre" id="nombre" placeholder="Nombre" required>
-        <textarea name="descripcion" id="descripcion" placeholder="Descripción"></textarea>
-        <input type="number" name="precio" id="precio" placeholder="Precio" step="0.01" required>
-        <input type="number" name="descuento" id="descuento" placeholder="Descuento (%)" required>
-        <input type="number" name="stock" id="stock" placeholder="Cantidad en stock" required>
-        <button type="submit">Guardar</button>
+      <form method="POST" action="crud.php">
+        <input type="hidden" name="accion" value="<?php echo isset($_GET['editar']) ? 'editar' : 'agregar'; ?>">
+        <input type="hidden" name="id" value="<?php echo $_GET['id'] ?? ''; ?>">
+        <input type="text" name="nombre" placeholder="Nombre" required 
+               value="<?php echo $_GET['nombre'] ?? ''; ?>">
+        <textarea name="descripcion" placeholder="Descripción"><?php echo $_GET['descripcion'] ?? ''; ?></textarea>
+        <input type="number" name="precio" placeholder="Precio" step="0.01" required 
+               value="<?php echo $_GET['precio'] ?? ''; ?>">
+        <input type="number" name="descuento" placeholder="Descuento (%)" required 
+               value="<?php echo $_GET['descuento'] ?? '0'; ?>" min="0" max="100">
+        <input type="number" name="stock" placeholder="Cantidad en stock" required 
+               value="<?php echo $_GET['stock'] ?? '0'; ?>" min="0">
+        <button type="submit"><?php echo isset($_GET['editar']) ? 'Actualizar' : 'Guardar'; ?></button>
       </form>
     </section>
 
@@ -58,12 +87,28 @@
           </tr>
         </thead>
         <tbody id="tablaProductos">
-          <!-- Cargado por AJAX -->
+          <?php 
+          if ($productos->num_rows > 0) {
+              while($row = $productos->fetch_assoc()) {
+                  echo "<tr>
+                          <td>{$row['nombre']}</td>
+                          <td>{$row['descripcion']}</td>
+                          <td>S/. {$row['precio']}</td>
+                          <td>{$row['descuento']}%</td>
+                          <td>{$row['stock']}</td>
+                          <td>
+                              <a href='index.php?editar=1&id={$row['id']}&nombre=".urlencode($row['nombre'])."&descripcion=".urlencode($row['descripcion'])."&precio={$row['precio']}&descuento={$row['descuento']}&stock={$row['stock']}' class='btnEditar'>✏️</a>
+                              <a href='crud.php?accion=eliminar&id={$row['id']}' onclick='return confirm(\"¿Estás seguro de eliminar este producto?\")'>🗑️</a>
+                          </td>
+                        </tr>";
+              }
+          } else {
+              echo "<tr><td colspan='6'>No hay productos registrados</td></tr>";
+          }
+          ?>
         </tbody>
       </table>
     </section>
   </main>
-
-<script src="script.js"></script>
 </body>
 </html>

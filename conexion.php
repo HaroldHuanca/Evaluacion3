@@ -7,7 +7,7 @@ $database = "evaluacion3";
 //$port = 3307
 
 // Crear conexión
-$con = new mysqli($servername, $username, $password, $database);
+$conexion = new mysqli($servername, $username, $password, $database);
 
 // Verificar conexión
 if ($conexion->connect_error) {
