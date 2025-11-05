@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="number" name="precio" placeholder="Precio" step="0.01" required 
                value="<?php echo $_GET['precio'] ?? ''; ?>">
         <input type="number" name="descuento" placeholder="Descuento (%)" required 
-               value="<?php echo $_GET['descuento'] ?? '0'; ?>" min="0" max="100">
+               value="<?php echo $_GET['descuento'] ?? '0'; ?>" min="0.00" max="100.00" step="0.01">
         <input type="number" name="stock" placeholder="Cantidad en stock" required 
                value="<?php echo $_GET['stock'] ?? '0'; ?>" min="0">
         <button type="submit"><?php echo isset($_GET['editar']) ? 'Actualizar' : 'Guardar'; ?></button>
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                           <td>{$row['descuento']}%</td>
                           <td>{$row['cantidad']}</td>
                           <td>
-                              <a href='index.php?editar=1&id={$row['id']}&nombre=".urlencode($row['nombre'])."&descripcion=".urlencode($row['descripcion'])."&precio={$row['precio']}&descuento={$row['descuento']}&stock={$row['stock']}' class='btnEditar'>✏️</a>
+                              <a href='index.php?editar=1&id={$row['id']}&nombre=".urlencode($row['nombre'])."&descripcion=".urlencode($row['descripcion'])."&precio={$row['precio']}&descuento={$row['descuento']}&stock={$row['cantidad']}' class='btnEditar'>✏️</a>
                               <a href='crud.php?accion=eliminar&nombre={$row['nombre']}' onclick='return confirm(\"¿Estás seguro de eliminar este producto?\")'>🗑️</a>
                           </td>
                         </tr>";
@@ -111,11 +111,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </section>
   </main>
   <footer>
-    <div style="margin: auto 0;">
-        <p>INTEGRANTES:</p><br>
-        <p>Harold Huanca Ccasa</p><br>
-        <p>Jorge Salvador Rodrigo Chipa</p><br>
-        <p>Aaron Ramirez Tisoc</p><br>
+    <div style="text-align: center;">
+        <h3>INTEGRANTES:</p><h3>
+        <ol>
+        <li>Harold Huanca Ccasa</li>
+        <li>Jorge Salvador Rodrigo Chipa</li>
+        <li>Aaron Ramirez Tisoc</li>
+        </ol>
     </div>
   </footer>
 </body>
